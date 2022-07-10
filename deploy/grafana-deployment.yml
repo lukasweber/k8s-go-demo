@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: default
+  labels:
+    app: grafana
+    component: core
+spec:
+  serviceName: svc-grafana
+  selector: 
+    matchLabels:
+      app: grafana
+      component: core
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grafana
+        component: core
+    spec:
+      initContainers:
+      - command: [ "sh" , "-c" ,  "whoami; chmod 777 /var/lib/grafana"]
+        image: busybox
+        name: volume-permissions
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: grafana-storage
+          readOnly: false
+      containers:
+        - image: grafana/grafana:5.4.2
+          name: grafana
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 3000
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: 200m
+              memory: 400Mi
+            requests:
+              cpu: 200m
+              memory: 400Mi
+          env: 
+            - name: GF_AUTH_BASIC_ENABLED
+              value: "true"
+            - name: GF_SECURITY_ADMIN_USER
+              value: admin
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "foobar"
+
+          volumeMounts:
+          - name: grafana-storage
+            mountPath: /var/lib/grafana
+            
+  volumeClaimTemplates:
+  - metadata:
+      name: grafana-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 25Gi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace : default
+  name: svc-grafana-lb
+  labels:
+    app: svc-grafana-lb
+    component: core
+spec:
+  selector:
+    app: grafana
+    component: core
+  type: LoadBalancer
+  ports:
+  - name: grafana-http
+    port: 4000
+    protocol: TCP
+    targetPort: 3000

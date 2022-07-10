@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-api-deployment
+  namespace: default
+  labels:
+    app: go-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: go-api
+  template:
+    metadata:
+      labels:
+        app: go-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "2121"
+    spec:
+      containers:
+      - name: go-api-test
+        image: go-api:2.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        - containerPort: 2121

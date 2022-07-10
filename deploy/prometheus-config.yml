@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-configmap
+  namespace: default
+data:
+  prometheus.yml : |
+    # my global config
+    global:
+      scrape_interval:     60s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+      evaluation_interval: 30s # Evaluate rules every 15 seconds. The default is every 1 minute.
+      # scrape_timeout is set to the global default (10s).
+    # A scrape configuration containing exactly one endpoint to scrape:
+    # Here it's Prometheus itself.
+    scrape_configs:
+      # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+      - job_name: go-api
+        metrics_path: /metrics
+        scheme: http
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace]
+          separator: ;
+          regex: (.*)
+          target_label: k8s_namespace
+          replacement: $1
+          action: replace
+        - source_labels: [__meta_kubernetes_pod_name]
+          separator: ;
+          regex: (.*)
+          target_label: k8s_pod_name
+          replacement: $1
+          action: replace
+        - source_labels: [__address__]
+          separator: ;
+          regex: ([^:]+)(?::\d+)?
+          target_label: __address__
+          replacement: ${1}:2121
+          action: replace
+          
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          separator: ;
+          regex: go-api
+          target_label: instance
+          action: keep
