@@ -1,0 +1,17 @@
+syntax = "proto3";
+package proto;
+option go_package = "./";
+
+service Calculator {
+    rpc CalculatePrimeNumbers(CalculateRequest) returns (CalculateResponse) {}
+}
+
+message CalculateRequest {
+  int32 from = 1;
+  int32 to = 2;
+}
+
+message CalculateResponse {
+  string hostname = 1;
+  int32 count = 2;
+}
