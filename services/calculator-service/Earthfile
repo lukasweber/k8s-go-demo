@@ -1,0 +1,19 @@
+VERSION 0.6
+
+deps:
+    FROM golang:1.18-alpine
+    WORKDIR /services/calculator-service
+    COPY go.mod go.sum ./
+    RUN go mod download
+
+compile:
+    FROM +deps
+    COPY proto ./proto
+    COPY server.go .
+    RUN go build -o server server.go
+    SAVE ARTIFACT .
+    
+docker:
+    FROM +compile
+    ENTRYPOINT ["./server"]
+    SAVE IMAGE k8s-go-calculator-service:latest k8s-go-calculator-service:0.1
