@@ -1,0 +1,20 @@
+VERSION 0.6
+
+deps:
+    FROM node:15.4
+    WORKDIR /services/ui
+    COPY package*.json .
+    RUN npm install
+
+compile:
+    FROM +deps
+    COPY . .
+    RUN npm run build
+    SAVE ARTIFACT build
+
+docker:
+    FROM nginx:1.19
+    EXPOSE 80
+    COPY +compile/build /usr/share/nginx/html
+    COPY nginx/nginx.conf /etc/nginx/nginx.conf
+    SAVE IMAGE k8s-go-ui:latest k8s-go-ui:0.2
