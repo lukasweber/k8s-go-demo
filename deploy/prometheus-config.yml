@@ -44,3 +44,34 @@ data:
           regex: go-api
           target_label: instance
           action: keep
+
+      - job_name: go-calculator
+        metrics_path: /metrics
+        scheme: http
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace]
+          separator: ;
+          regex: (.*)
+          target_label: k8s_namespace
+          replacement: $1
+          action: replace
+        - source_labels: [__meta_kubernetes_pod_name]
+          separator: ;
+          regex: (.*)
+          target_label: k8s_pod_name
+          replacement: $1
+          action: replace
+        - source_labels: [__address__]
+          separator: ;
+          regex: ([^:]+)(?::\d+)?
+          target_label: __address__
+          replacement: ${1}:2121
+          action: replace
+          
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          separator: ;
+          regex: go-calculator
+          target_label: instance
+          action: keep
