@@ -15,4 +15,4 @@ compile:
 docker:
     FROM +compile
     ENTRYPOINT ["./server"]
-    SAVE IMAGE k8s-go-api-service:latest k8s-go-api-service:0.1
+    SAVE IMAGE k8s-go-api-service:latest k8s-go-api-service:0.2

@@ -71,6 +71,7 @@ func handleCalcRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.Parse()
 
 	// setup grpc client
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
