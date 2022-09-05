@@ -1,3 +1,4 @@
+# Source: https://faun.pub/k8s-microservice-monitoring-using-prometheus-and-grafana-106d0397b01b
 apiVersion: v1
 kind: ConfigMap
 metadata:
