@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator-ui-deployment
+  namespace: default
+  labels:
+    app: calculator-ui
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: calculator-ui
+  template:
+    metadata:
+      labels:
+        app: calculator-ui
+    spec:
+      containers:
+      - name: calculator-ui
+        image: k8s-go-ui:0.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80

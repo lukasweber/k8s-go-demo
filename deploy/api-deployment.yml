@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: go-api
-        image: k8s-go-api-service:0.2
+        image: k8s-go-api-service:0.4
         imagePullPolicy: IfNotPresent
         args:
           - "--addr"
